@@ -1,0 +1,79 @@
+{% extends 'admin/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="hero mb-4">
+  <div>
+    <div class="eyebrow">● ADMIN OVERVIEW</div>
+    <h1>Make waste matter less.</h1>
+    <p>Manage all collections, coordinate recycling, and keep every record in one place.</p>
+    <a class="btn btn-light mt-2" href="{{ url_for('create', name='PICKUP_REQUESTS') }}">
+      <i class="bi bi-plus-lg me-2"></i>Create pickup request
+    </a>
+  </div>
+  <div class="hero-art">
+    <i class="bi bi-recycle"></i>
+    <span>Reuse · Recover · Renew</span>
+  </div>
+</section>
+
+<div class="section-heading">
+  <div><h2>System Overview</h2><p>Live totals from your MySQL database</p></div>
+  <span class="muted">Refresh page to update</span>
+</div>
+<div class="row g-3 mb-4">
+  {% for key, label, icon, color in [
+    ('USERS','Users','people-fill','purple'),
+    ('PICKUP_REQUESTS','Pickup Requests','truck','green'),
+    ('COLLECTION_AGENTS','Collection Agents','person-badge-fill','orange'),
+    ('RECYCLING_CENTERS','Recycling Centers','buildings-fill','blue'),
+    ('E_WASTE_CATEGORIES','Waste Categories','recycle','pink'),
+    ('PAYMENTS','Payment Records','credit-card-fill','teal')
+  ] %}
+  <div class="col-6 col-xl-4">
+    <a class="stat-card {{ color }}" href="{{ url_for('listing', name=key) }}">
+      <div class="stat-top">
+        <span>{{ label }}</span>
+        <i class="bi bi-{{ icon }}"></i>
+      </div>
+      <div class="stat-value">{{ counts.get(key, '—') }}</div>
+      <div class="stat-bottom">View records <i class="bi bi-arrow-up-right"></i></div>
+    </a>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="section-heading">
+  <div><h2>Recent Pickup Requests</h2><p>Latest requests recorded in the system</p></div>
+  <a class="btn btn-outline-success" href="{{ url_for('listing', name='PICKUP_REQUESTS') }}">
+    View all <i class="bi bi-arrow-right ms-1"></i>
+  </a>
+</div>
+<div class="table-card table-responsive">
+  <table class="table align-middle mb-0">
+    <thead>
+      <tr>
+        <th>Request</th><th>User</th><th>Date</th>
+        <th>Pickup Address</th><th>Status</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in recent %}
+      <tr>
+        <td class="fw-bold">#{{ r[0] }}</td>
+        <td>{{ r[1] }}</td>
+        <td>{{ r[2] }}</td>
+        <td>{{ r[3] }}</td>
+        <td><span class="status-pill {{ r[4]|lower|replace(' ','-') }}">{{ r[4] }}</span></td>
+        <td>
+          <a class="icon-button" href="{{ url_for('edit', name='PICKUP_REQUESTS', rid=r[0]) }}">
+            <i class="bi bi-pencil"></i>
+          </a>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="empty-state">No pickup requests found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

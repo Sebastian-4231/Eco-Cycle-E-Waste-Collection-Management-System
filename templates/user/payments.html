@@ -1,0 +1,102 @@
+{% extends 'user/base.html' %}
+{% block title %}Payment Details{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <div class="eyebrow">FINANCIAL RECORDS</div>
+    <h1>Payment Details</h1>
+    <p>View payment records associated with your pickup requests.</p>
+  </div>
+</div>
+
+{% if payments %}
+<div class="table-card table-responsive">
+  <table class="table align-middle mb-0">
+    <thead>
+      <tr>
+        <th>Payment ID</th>
+        <th>Request ID</th>
+        <th>Pickup Address</th>
+        <th>Amount</th>
+        <th>Date</th>
+        <th>Method</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in payments %}
+      <tr>
+        <td class="fw-bold">#{{ p.Payment_ID }}</td>
+        <td>
+          <a href="{{ url_for('user_my_requests') }}"
+             style="color:var(--green);font-weight:700;text-decoration:none;">
+            #{{ p.Request_ID }}
+          </a>
+        </td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+          {{ p.Pickup_Address }}
+        </td>
+        <td>
+          <span style="font-family:Manrope,sans-serif;font-weight:800;font-size:14px;color:#13875d;">
+            ₹{{ p.Amount }}
+          </span>
+        </td>
+        <td>{{ p.Payment_Date or '—' }}</td>
+        <td>
+          {% if p.Payment_Method %}
+          <span style="font-size:11px;font-weight:700;background:#f5f8f6;padding:4px 10px;border-radius:20px;border:1px solid var(--line);">
+            {{ p.Payment_Method }}
+          </span>
+          {% else %}—{% endif %}
+        </td>
+        <td>
+          <span class="status-pill {{ (p.Payment_Status or '')|lower }}">
+            {{ p.Payment_Status or '—' }}
+          </span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Summary -->
+<div class="row g-3 mt-2">
+  {% set total_amount = payments | sum(attribute='Amount') %}
+  {% set paid = payments | selectattr('Payment_Status', 'equalto', 'Completed') | list %}
+  <div class="col-md-4">
+    <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:6px;">TOTAL PAYMENTS</div>
+      <div style="font-family:Manrope,sans-serif;font-size:24px;font-weight:800;color:var(--ink);">
+        {{ payments|length }}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:6px;">COMPLETED</div>
+      <div style="font-family:Manrope,sans-serif;font-size:24px;font-weight:800;color:#14814d;">
+        {{ paid|length }}
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div style="background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;">
+      <div style="font-size:11px;font-weight:800;color:var(--muted);margin-bottom:6px;">TOTAL AMOUNT</div>
+      <div style="font-family:Manrope,sans-serif;font-size:24px;font-weight:800;color:#13875d;">
+        ₹{{ "%.2f"|format(total_amount) }}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% else %}
+<div style="text-align:center;padding:80px 20px;background:#fff;border-radius:16px;border:1px solid var(--line);">
+  <i class="bi bi-credit-card" style="font-size:52px;color:#40a977;"></i>
+  <h4 style="font-family:Manrope,sans-serif;font-weight:800;margin:16px 0 8px;">No payment records</h4>
+  <p style="color:var(--muted);font-size:13px;max-width:350px;margin:0 auto;">
+    Payment records will appear here once your pickup requests have been processed.
+  </p>
+</div>
+{% endif %}
+{% endblock %}

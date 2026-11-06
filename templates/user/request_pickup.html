@@ -1,0 +1,140 @@
+{% extends 'user/base.html' %}
+{% block title %}Request Pickup{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <div class="eyebrow">NEW REQUEST</div>
+    <h1>Request Pickup</h1>
+    <p>Select the e-waste items you want to recycle and schedule a pickup.</p>
+  </div>
+</div>
+
+<form method="post" id="pickupForm">
+  <div class="row g-4">
+    <!-- E-waste categories -->
+    <div class="col-lg-7">
+      <div class="form-card">
+        <h5 style="font-family:Manrope,sans-serif;font-weight:800;margin-bottom:4px;">
+          <i class="bi bi-recycle me-2" style="color:var(--green);"></i>Select E-Waste Items
+        </h5>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:20px;">
+          Check the items you want to recycle and enter the quantity.
+        </p>
+
+        {% if categories %}
+          <div id="categoryList" style="display:flex;flex-direction:column;gap:10px;">
+            {% for cat in categories %}
+            <div class="category-item" style="border:2px solid var(--line);border-radius:12px;padding:14px 16px;transition:all 0.2s;"
+                 id="cat-wrapper-{{ cat.Category_ID }}">
+              <div style="display:flex;align-items:center;gap:12px;">
+                <input type="checkbox" class="form-check-input cat-checkbox"
+                       id="cat{{ cat.Category_ID }}"
+                       name="category_ids"
+                       value="{{ cat.Category_ID }}"
+                       onchange="toggleQty({{ cat.Category_ID }})"
+                       style="width:18px;height:18px;accent-color:var(--green);cursor:pointer;flex-shrink:0;">
+                <label for="cat{{ cat.Category_ID }}" style="flex:1;cursor:pointer;">
+                  <div style="font-weight:700;font-size:13px;">{{ cat.Category_Name }}</div>
+                  <div style="font-size:11px;color:var(--muted);margin-top:2px;">
+                    {{ cat.Description or 'No description.' }}
+                    {% if cat.Recycling_Value %}
+                      — <span style="color:#13875d;font-weight:700;">₹{{ cat.Recycling_Value }} / unit</span>
+                    {% endif %}
+                  </div>
+                </label>
+              </div>
+              <div class="qty-row" id="qty-{{ cat.Category_ID }}"
+                   style="display:none;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);">
+                <label class="form-label" style="margin-bottom:6px;">
+                  Quantity <span style="color:#e45656">*</span>
+                </label>
+                <input type="number" class="form-control" name="quantity_{{ cat.Category_ID }}"
+                       id="qty_input_{{ cat.Category_ID }}"
+                       min="1" value="1" placeholder="Enter quantity"
+                       style="max-width:200px;">
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <div style="text-align:center;padding:40px;color:var(--muted);">
+            <i class="bi bi-recycle" style="font-size:40px;"></i>
+            <p style="margin-top:10px;font-size:13px;">No e-waste categories available.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Pickup details -->
+    <div class="col-lg-5">
+      <div class="form-card">
+        <h5 style="font-family:Manrope,sans-serif;font-weight:800;margin-bottom:4px;">
+          <i class="bi bi-geo-alt me-2" style="color:var(--green);"></i>Pickup Details
+        </h5>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:20px;">Enter where we should collect the e-waste.</p>
+
+        <div class="mb-4">
+          <label class="form-label" for="pickup_address">
+            Pickup Address <span style="color:#e45656">*</span>
+          </label>
+          <textarea class="form-control" id="pickup_address" name="pickup_address"
+                    rows="4" required placeholder="Enter full pickup address including street, city, pincode..."></textarea>
+        </div>
+
+        <div style="background:#f2faf5;border:1px solid #e0f1e6;border-radius:12px;padding:14px;margin-bottom:20px;">
+          <div style="font-size:11px;font-weight:700;color:#13875d;margin-bottom:4px;">
+            <i class="bi bi-info-circle me-1"></i>What happens next?
+          </div>
+          <ul style="font-size:11px;color:#4b6e5a;margin:0;padding-left:16px;line-height:1.7;">
+            <li>Your request will be submitted as <strong>Pending</strong></li>
+            <li>An admin will assign a collection agent</li>
+            <li>The agent will contact you to confirm timing</li>
+            <li>After collection, payment details will be updated</li>
+          </ul>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100" id="submitBtn"
+                style="padding:14px;font-size:14px;">
+          <i class="bi bi-send me-2"></i>Submit Pickup Request
+        </button>
+        <a class="btn btn-outline-secondary w-100 mt-2" href="{{ url_for('user_dashboard') }}">
+          Cancel
+        </a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+function toggleQty(id) {
+  const cb = document.getElementById('cat' + id);
+  const row = document.getElementById('qty-' + id);
+  const wrapper = document.getElementById('cat-wrapper-' + id);
+  const input = document.getElementById('qty_input_' + id);
+
+  if (cb.checked) {
+    row.style.display = 'block';
+    wrapper.style.borderColor = 'var(--green)';
+    wrapper.style.background = '#f8fdf9';
+    input.required = true;
+  } else {
+    row.style.display = 'none';
+    wrapper.style.borderColor = 'var(--line)';
+    wrapper.style.background = '';
+    input.required = false;
+  }
+}
+
+document.getElementById('pickupForm').addEventListener('submit', function(e) {
+  const checkboxes = document.querySelectorAll('.cat-checkbox:checked');
+  if (checkboxes.length === 0) {
+    e.preventDefault();
+    alert('Please select at least one e-waste category.');
+    return;
+  }
+  const btn = document.getElementById('submitBtn');
+  btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+  btn.disabled = true;
+});
+</script>
+{% endblock %}

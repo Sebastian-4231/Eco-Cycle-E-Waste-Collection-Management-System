@@ -1,0 +1,62 @@
+{% extends 'admin/base.html' %}
+{% block title %}{{ mode }} {{ table.title }}{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <div class="eyebrow">{{ mode|upper }} RECORD</div>
+    <h1>{{ mode }} {{ table.title }}</h1>
+    <p>Complete the fields below. Required fields are marked with an asterisk.</p>
+  </div>
+  <a class="btn btn-outline-secondary" href="{{ url_for('listing', name=name) }}">
+    <i class="bi bi-arrow-left me-2"></i>Back to records
+  </a>
+</div>
+
+<div class="form-card">
+  <form method="post">
+    <div class="row g-4">
+      {% for f in fields %}
+        {% if not f.readonly %}
+          {% set value = record.get(f.name, '') if record else '' %}
+          <div class="{% if f.kind == 'textarea' %}col-12{% else %}col-md-6{% endif %}">
+            <label class="form-label" for="{{ f.name }}">
+              {{ f.label }}
+              {% if f.required %}<span class="required-star"> *</span>{% endif %}
+            </label>
+            {% if f.kind == 'textarea' %}
+              <textarea class="form-control" id="{{ f.name }}" name="{{ f.name }}"
+                        rows="3" {% if f.required %}required{% endif %}>{{ value if value is not none else '' }}</textarea>
+            {% elif f.kind in ['select', 'fk'] %}
+              <select class="form-select" id="{{ f.name }}" name="{{ f.name }}"
+                      {% if f.required %}required{% endif %}>
+                <option value="">Choose {{ f.label|lower }}...</option>
+                {% for ov, ol in f.options %}
+                <option value="{{ ov }}" {% if value|string == ov|string %}selected{% endif %}>{{ ol }}</option>
+                {% endfor %}
+              </select>
+            {% else %}
+              <input class="form-control" id="{{ f.name }}" name="{{ f.name }}"
+                     type="{{ 'password' if f.kind == 'password' else ('number' if f.kind in ['number','decimal'] else f.kind) }}"
+                     {% if f.kind == 'decimal' %}step="0.01"{% elif f.kind == 'number' %}step="1"{% endif %}
+                     {% if f.kind == 'password' and mode == 'Edit' %}placeholder="Leave blank to keep current password"{% endif %}
+                     value="{{ '' if f.kind == 'password' else (value if value is not none else '') }}"
+                     {% if f.required and not (f.kind == 'password' and mode == 'Edit') %}required{% endif %}>
+            {% endif %}
+            {% if f.kind == 'password' %}
+              <div class="form-text">Passwords are hashed before saving. Existing passwords are not displayed.</div>
+            {% elif f.kind == 'fk' %}
+              <div class="form-text">Choose an existing related record.</div>
+            {% endif %}
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+    <div class="form-actions mt-4">
+      <a class="btn btn-light btn-lg" href="{{ url_for('listing', name=name) }}">Cancel</a>
+      <button class="btn btn-success btn-lg">
+        <i class="bi bi-check2-circle me-2"></i>{{ mode }} record
+      </button>
+    </div>
+  </form>
+</div>
+{% endblock %}

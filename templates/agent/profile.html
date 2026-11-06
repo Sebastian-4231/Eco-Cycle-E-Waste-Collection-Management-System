@@ -1,0 +1,114 @@
+{% extends 'agent/base.html' %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="page-heading">
+  <div>
+    <div class="eyebrow">AGENT ACCOUNT</div>
+    <h1>My Profile</h1>
+    <p>View and update your agent information.</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Profile card -->
+  <div class="col-md-4">
+    <div class="form-card text-center" style="padding:28px;">
+      <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#e58c2c,#f5b060);display:flex;align-items:center;justify-content:center;font-size:36px;color:white;margin:0 auto 16px;font-family:Manrope,sans-serif;font-weight:800;">
+        {{ (agent.Agent_Name or 'A')[0]|upper }}
+      </div>
+      <h5 style="font-family:Manrope,sans-serif;font-weight:800;margin-bottom:4px;">{{ agent.Agent_Name }}</h5>
+      <div style="font-size:11px;color:var(--muted);margin-bottom:12px;">{{ agent.Email or 'No email' }}</div>
+      <span style="font-size:10px;font-weight:800;background:#fff0df;color:#e58c2c;padding:5px 12px;border-radius:20px;">
+        <i class="bi bi-person-badge me-1"></i>Collection Agent
+      </span>
+      <span style="display:block;margin-top:8px;font-size:10px;font-weight:800;
+        background:{{ '#e1f8eb' if agent.Status == 'Available' else ('#fff2d9' if agent.Status == 'Busy' else '#ffe8e8') }};
+        color:{{ '#14814d' if agent.Status == 'Available' else ('#a86a09' if agent.Status == 'Busy' else '#bd4242') }};
+        padding:5px 12px;border-radius:20px;">
+        ● {{ agent.Status or 'Unknown' }}
+      </span>
+
+      <hr style="margin:18px 0;border-color:var(--line);">
+      <div style="text-align:left;">
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:4px;">Phone</div>
+        <div style="font-size:13px;font-weight:600;margin-bottom:12px;">{{ agent.Phone or '—' }}</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;margin-bottom:4px;">Agent ID</div>
+        <div style="font-size:13px;font-weight:600;">#{{ agent.Agent_ID }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit form -->
+  <div class="col-md-8">
+    <div class="form-card">
+      <h5 style="font-family:Manrope,sans-serif;font-weight:800;margin-bottom:20px;">
+        <i class="bi bi-pencil-square me-2" style="color:#e58c2c;"></i>Edit Profile
+      </h5>
+      <form method="post">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label" for="name">Full Name <span style="color:#e45656">*</span></label>
+            <input type="text" class="form-control" id="name" name="name"
+                   value="{{ agent.Agent_Name or '' }}" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-control" value="{{ agent.Email or '' }}" disabled
+                   style="background:#f5f8f6;cursor:not-allowed;">
+            <div style="font-size:10px;color:var(--muted);margin-top:4px;">Email cannot be changed.</div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="phone">Phone Number</label>
+            <input type="tel" class="form-control" id="phone" name="phone"
+                   value="{{ agent.Phone or '' }}">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Status</label>
+            <input type="text" class="form-control" value="{{ agent.Status or '' }}" disabled
+                   style="background:#f5f8f6;cursor:not-allowed;">
+            <div style="font-size:10px;color:var(--muted);margin-top:4px;">Status is managed by admin.</div>
+          </div>
+
+          <div class="col-12">
+            <hr style="border-color:var(--line);margin:4px 0 12px;">
+            <div style="font-size:12px;font-weight:700;color:#43544a;margin-bottom:12px;">
+              <i class="bi bi-lock me-1"></i>Change Password (leave blank to keep current)
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="password">New Password</label>
+            <input type="password" class="form-control" id="password" name="password"
+                   placeholder="Min. 6 characters" autocomplete="new-password">
+          </div>
+          <div class="col-md-6">
+            <label class="form-label" for="confirm_password">Confirm New Password</label>
+            <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                   placeholder="Repeat new password" autocomplete="new-password">
+          </div>
+          <div id="pwdMsg" style="display:none;color:#e45656;font-size:11px;padding:0 6px;">
+            <i class="bi bi-x-circle me-1"></i>Passwords do not match.
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;border-top:1px solid var(--line);padding-top:20px;margin-top:20px;">
+          <a class="btn btn-outline-secondary" href="{{ url_for('agent_dashboard') }}">Cancel</a>
+          <button type="submit" class="btn btn-success">
+            <i class="bi bi-check2-circle me-2"></i>Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  const p1 = document.getElementById('password');
+  const p2 = document.getElementById('confirm_password');
+  const msg = document.getElementById('pwdMsg');
+  function checkMatch() {
+    msg.style.display = (p2.value && p1.value !== p2.value) ? 'block' : 'none';
+  }
+  p1.addEventListener('input', checkMatch);
+  p2.addEventListener('input', checkMatch);
+</script>
+{% endblock %}

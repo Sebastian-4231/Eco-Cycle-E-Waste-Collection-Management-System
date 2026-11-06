@@ -1,0 +1,128 @@
+{% extends 'agent/base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+
+<!-- Welcome hero -->
+<div style="background:linear-gradient(112deg,#1a3a2a,#2a6040 55%,#3a8a5a);border-radius:20px;padding:28px 34px;color:white;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;overflow:hidden;position:relative;">
+  <div style="position:relative;z-index:1;">
+    <div style="font-size:10px;font-weight:800;letter-spacing:1.5px;color:#ffd0a0;margin-bottom:6px;">
+      ● COLLECTION AGENT DASHBOARD
+    </div>
+    <h1 style="font-family:Manrope,sans-serif;font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-0.8px;margin:0 0 8px;">
+      Welcome, {{ session.get('name', 'Agent') }}
+    </h1>
+    <p style="color:#c8ddd4;font-size:13px;margin:0;">Here's your assigned pickup activity overview.</p>
+  </div>
+  <div style="font-size:80px;color:rgba(255,255,255,0.12);line-height:1;flex-shrink:0;">
+    <i class="bi bi-person-badge-fill"></i>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card orange">
+      <div class="stat-top">
+        <span>Total Assigned</span>
+        <i class="bi bi-list-check"></i>
+      </div>
+      <div class="stat-value">{{ total }}</div>
+      <div class="stat-label">All pickups assigned to you</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card yellow">
+      <div class="stat-top">
+        <span>Pending</span>
+        <i class="bi bi-clock-history"></i>
+      </div>
+      <div class="stat-value">{{ pending }}</div>
+      <div class="stat-label">Awaiting action</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card green">
+      <div class="stat-top">
+        <span>Completed</span>
+        <i class="bi bi-check2-circle"></i>
+      </div>
+      <div class="stat-value">{{ completed }}</div>
+      <div class="stat-label">Successfully completed</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick actions -->
+<div class="section-heading">
+  <div><h2>Quick Actions</h2></div>
+</div>
+<div class="row g-3 mb-4">
+  <div class="col-sm-6">
+    <a href="{{ url_for('agent_pickups') }}"
+       style="display:flex;align-items:center;gap:14px;padding:18px;background:#fff;border:1px solid var(--line);border-radius:14px;text-decoration:none;color:var(--ink);transition:0.18s;">
+      <div style="width:48px;height:48px;border-radius:12px;background:#fff0df;color:#e58c2c;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">
+        <i class="bi bi-truck"></i>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:13px;">View Assigned Pickups</div>
+        <div style="font-size:11px;color:var(--muted);">See all your pickup assignments</div>
+      </div>
+    </a>
+  </div>
+  <div class="col-sm-6">
+    <a href="{{ url_for('agent_profile') }}"
+       style="display:flex;align-items:center;gap:14px;padding:18px;background:#fff;border:1px solid var(--line);border-radius:14px;text-decoration:none;color:var(--ink);transition:0.18s;">
+      <div style="width:48px;height:48px;border-radius:12px;background:#e1f8eb;color:#13875d;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">
+        <i class="bi bi-person-badge"></i>
+      </div>
+      <div>
+        <div style="font-weight:700;font-size:13px;">My Profile</div>
+        <div style="font-size:11px;color:var(--muted);">Update your information</div>
+      </div>
+    </a>
+  </div>
+</div>
+
+<!-- Recent assignments -->
+<div class="section-heading">
+  <div><h2>Recent Assignments</h2><p>Your latest pickup tasks</p></div>
+  <a class="btn btn-outline-success btn-sm" href="{{ url_for('agent_pickups') }}">
+    View all <i class="bi bi-arrow-right ms-1"></i>
+  </a>
+</div>
+
+<div class="table-card table-responsive">
+  <table class="table align-middle mb-0">
+    <thead>
+      <tr>
+        <th>Assignment</th>
+        <th>Request</th>
+        <th>User</th>
+        <th>Pickup Address</th>
+        <th>Assigned On</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in recent %}
+      <tr>
+        <td class="fw-bold">#{{ r[0] }}</td>
+        <td>#{{ r[1] }}</td>
+        <td>{{ r[2] }}</td>
+        <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ r[3] }}</td>
+        <td>{{ r[5] }}</td>
+        <td>
+          <span class="status-pill {{ (r[4] or '')|lower|replace(' ','-') }}">{{ r[4] }}</span>
+        </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" style="text-align:center;padding:40px;color:#98a49d;">
+          No assignments yet. Check back when the admin assigns pickups to you.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

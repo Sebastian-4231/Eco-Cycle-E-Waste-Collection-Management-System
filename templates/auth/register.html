@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Register | EcoCycle E-Waste Manager</title>
+  <meta name="description" content="Create your EcoCycle account to start managing e-waste collections.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #13875d;
+      --green-dark: #0b5e40;
+      --green-light: #e5f7ec;
+      --ink: #1c2b27;
+      --muted: #74817b;
+      --line: #e7eeea;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'DM Sans', sans-serif;
+      background: linear-gradient(135deg, #0b3d2a 0%, #13875d 50%, #1db87a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 20px;
+    }
+    .auth-wrapper {
+      display: flex;
+      width: 100%;
+      max-width: 1050px;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.3);
+    }
+    .auth-brand {
+      flex: 1;
+      background: linear-gradient(160deg, #0b3d2a, #13875d);
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-brand::before {
+      content: '';
+      position: absolute;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+      bottom: -80px;
+      right: -80px;
+    }
+    .brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-icon {
+      width: 48px; height: 48px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+    }
+    .brand-logo h1 {
+      font-family: Manrope, sans-serif;
+      font-size: 26px; font-weight: 800; margin: 0; letter-spacing: -0.5px;
+    }
+    .brand-logo small { display: block; font-size: 11px; color: rgba(255,255,255,0.6); }
+    .brand-hero h2 {
+      font-family: Manrope, sans-serif;
+      font-size: clamp(20px, 3vw, 28px); font-weight: 800; line-height: 1.25; margin-bottom: 14px;
+    }
+    .brand-hero p { color: rgba(255,255,255,0.75); font-size: 13px; line-height: 1.6; max-width: 280px; }
+    .role-card {
+      border-radius: 12px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+    .role-card-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+    .role-card-desc { font-size: 11px; color: rgba(255,255,255,0.65); }
+    /* Form panel */
+    .auth-form-panel {
+      width: 480px; flex-shrink: 0;
+      background: #fff; padding: 44px 42px;
+      display: flex; flex-direction: column; justify-content: center;
+      overflow-y: auto;
+    }
+    .auth-title { font-family: Manrope, sans-serif; font-size: 24px; font-weight: 800; color: var(--ink); margin: 0 0 4px; }
+    .auth-subtitle { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+    .form-label { font-size: 12px; font-weight: 700; color: #43544a; margin-bottom: 6px; }
+    .form-control, .form-select {
+      border-color: var(--line); border-radius: 10px; padding: 11px 14px;
+      font-size: 13px; color: var(--ink);
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: var(--green); box-shadow: 0 0 0 3px rgba(19,135,93,0.12);
+    }
+    .input-group .form-control { border-right: 0; }
+    .input-group-text {
+      background: #f8faf9; border-color: var(--line); border-left: 0;
+      border-radius: 0 10px 10px 0; cursor: pointer; color: var(--muted); transition: color 0.2s;
+    }
+    .input-group-text:hover { color: var(--green); }
+    /* Role selector */
+    .role-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 6px; }
+    .role-option input { display: none; }
+    .role-option label {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px; padding: 14px 10px; border: 2px solid var(--line); border-radius: 12px;
+      cursor: pointer; transition: all 0.2s; text-align: center; font-size: 12px; font-weight: 700;
+      color: var(--muted);
+    }
+    .role-option label i { font-size: 22px; }
+    .role-option input:checked + label {
+      border-color: var(--green); background: var(--green-light); color: var(--green);
+    }
+    .role-option label:hover { border-color: #6dc99a; background: #f5fdf8; }
+    .btn-auth {
+      background: linear-gradient(135deg, #13875d, #1db87a); border: none;
+      border-radius: 12px; padding: 14px; font-size: 14px; font-weight: 700; color: white;
+      width: 100%; margin-top: 6px; transition: opacity 0.2s, transform 0.15s;
+      box-shadow: 0 6px 20px rgba(19,135,93,0.3);
+    }
+    .btn-auth:hover { opacity: 0.92; transform: translateY(-1px); color: white; }
+    .auth-footer { text-align: center; margin-top: 18px; font-size: 12px; color: var(--muted); }
+    .auth-footer a { color: var(--green); font-weight: 700; text-decoration: none; }
+    .auth-footer a:hover { text-decoration: underline; }
+    .alert { border-radius: 10px; font-size: 12px; }
+    .form-text { font-size: 11px; color: #8c9991; }
+    @media (max-width: 768px) {
+      .auth-brand { display: none; }
+      .auth-form-panel { width: 100%; padding: 32px 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-wrapper">
+    <!-- Left branding panel -->
+    <div class="auth-brand">
+      <div class="brand-logo">
+        <div class="brand-icon"><i class="bi bi-recycle"></i></div>
+        <div><h1>EcoCycle</h1><small>E-Waste Collection &amp; Recycling</small></div>
+      </div>
+      <div class="brand-hero">
+        <h2>Join the green revolution.</h2>
+        <p>Create your account and be part of a smarter, cleaner approach to e-waste management.</p>
+      </div>
+      <div>
+        <div class="role-card">
+          <div class="role-card-title"><i class="bi bi-person me-1"></i>Register as User</div>
+          <div class="role-card-desc">Submit pickup requests, track your waste, and view payment details.</div>
+        </div>
+        <div class="role-card">
+          <div class="role-card-title"><i class="bi bi-person-badge me-1"></i>Register as Collection Agent</div>
+          <div class="role-card-desc">Get assigned pickups, manage collections, and update statuses.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right form panel -->
+    <div class="auth-form-panel">
+      <h2 class="auth-title">Create account</h2>
+      <p class="auth-subtitle">Fill in your details to get started</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for cat, msg in messages %}
+          <div class="alert alert-{{ cat }} alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i>{{ msg }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endwith %}
+
+      <form method="post" id="registerForm" novalidate>
+        <div class="row g-3">
+          <!-- Account type -->
+          <div class="col-12">
+            <label class="form-label">Account Type <span style="color:#e45656">*</span></label>
+            <div class="role-options">
+              <div class="role-option">
+                <input type="radio" name="account_type" id="roleUser" value="USER"
+                  {% if form_data.get('account_type','USER') == 'USER' %}checked{% endif %}>
+                <label for="roleUser">
+                  <i class="bi bi-person-circle"></i>
+                  User
+                </label>
+              </div>
+              <div class="role-option">
+                <input type="radio" name="account_type" id="roleAgent" value="COLLECTION_AGENT"
+                  {% if form_data.get('account_type') == 'COLLECTION_AGENT' %}checked{% endif %}>
+                <label for="roleAgent">
+                  <i class="bi bi-person-badge-fill"></i>
+                  Collection Agent
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Full Name -->
+          <div class="col-12">
+            <label class="form-label" for="name">Full Name <span style="color:#e45656">*</span></label>
+            <input type="text" class="form-control" id="name" name="name"
+                   placeholder="Enter your full name" required
+                   value="{{ form_data.get('name','') }}">
+          </div>
+
+          <!-- Email -->
+          <div class="col-12">
+            <label class="form-label" for="email">Email Address <span style="color:#e45656">*</span></label>
+            <input type="email" class="form-control" id="email" name="email"
+                   placeholder="you@example.com" required autocomplete="email"
+                   value="{{ form_data.get('email','') }}">
+          </div>
+
+          <!-- Phone -->
+          <div class="col-md-6">
+            <label class="form-label" for="phone">Phone Number <span style="color:#e45656">*</span></label>
+            <input type="tel" class="form-control" id="phone" name="phone"
+                   placeholder="+91 98765 43210" required
+                   value="{{ form_data.get('phone','') }}">
+          </div>
+
+          <!-- Address (Users only) -->
+          <div class="col-md-6" id="addressGroup">
+            <label class="form-label" for="address">Address</label>
+            <input type="text" class="form-control" id="address" name="address"
+                   placeholder="Your address"
+                   value="{{ form_data.get('address','') }}">
+          </div>
+
+          <!-- Password -->
+          <div class="col-md-6">
+            <label class="form-label" for="password">Password <span style="color:#e45656">*</span></label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="password" name="password"
+                     placeholder="Min. 6 characters" required autocomplete="new-password">
+              <span class="input-group-text" id="togglePwd1"><i class="bi bi-eye" id="eye1"></i></span>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="col-md-6">
+            <label class="form-label" for="confirm_password">Confirm Password <span style="color:#e45656">*</span></label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="confirm_password" name="confirm_password"
+                     placeholder="Repeat password" required autocomplete="new-password">
+              <span class="input-group-text" id="togglePwd2"><i class="bi bi-eye" id="eye2"></i></span>
+            </div>
+          </div>
+        </div>
+
+        <div id="pwdMatchMsg" class="form-text mt-1" style="color:#e45656;display:none;">
+          <i class="bi bi-x-circle me-1"></i>Passwords do not match.
+        </div>
+
+        <button type="submit" class="btn-auth mt-3" id="registerBtn">
+          <i class="bi bi-person-plus me-2"></i>Create Account
+        </button>
+      </form>
+
+      <div class="auth-footer">
+        Already have an account? <a href="{{ url_for('login') }}">Sign in here</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle passwords
+    function togglePwd(inputId, iconId) {
+      const input = document.getElementById(inputId);
+      const icon = document.getElementById(iconId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bi bi-eye-slash';
+      } else {
+        input.type = 'password';
+        icon.className = 'bi bi-eye';
+      }
+    }
+    document.getElementById('togglePwd1').addEventListener('click', () => togglePwd('password', 'eye1'));
+    document.getElementById('togglePwd2').addEventListener('click', () => togglePwd('confirm_password', 'eye2'));
+
+    // Real-time password match
+    function checkMatch() {
+      const p1 = document.getElementById('password').value;
+      const p2 = document.getElementById('confirm_password').value;
+      const msg = document.getElementById('pwdMatchMsg');
+      if (p2 && p1 !== p2) { msg.style.display = 'block'; }
+      else { msg.style.display = 'none'; }
+    }
+    document.getElementById('password').addEventListener('input', checkMatch);
+    document.getElementById('confirm_password').addEventListener('input', checkMatch);
+
+    // Show/hide address field based on role
+    const roleUser = document.getElementById('roleUser');
+    const roleAgent = document.getElementById('roleAgent');
+    const addrGroup = document.getElementById('addressGroup');
+    function updateAddressVisibility() {
+      addrGroup.style.display = roleUser.checked ? '' : 'none';
+    }
+    roleUser.addEventListener('change', updateAddressVisibility);
+    roleAgent.addEventListener('change', updateAddressVisibility);
+    updateAddressVisibility();
+
+    // Loading state on submit
+    document.getElementById('registerForm').addEventListener('submit', function (e) {
+      const p1 = document.getElementById('password').value;
+      const p2 = document.getElementById('confirm_password').value;
+      if (p1 !== p2) { e.preventDefault(); return; }
+      const btn = document.getElementById('registerBtn');
+      btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Creating...';
+      btn.disabled = true;
+    });
+  </script>
+</body>
+</html>
